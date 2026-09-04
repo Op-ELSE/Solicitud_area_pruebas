@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABB - Portal de Acceso a Área de Pruebas</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --abb-red: #FF000F;
+            --abb-red-dark: #cc000c;
+            --abb-black: #1A1A1A;
+            --abb-dark-gray: #333333;
+            --abb-mid-gray: #767676;
+            --abb-light-gray: #F2F2F2;
+            --abb-border: #E0E0E0;
+            --abb-white: #FFFFFF;
+            --abb-accent-bg: #FAFAFA;
+            --abb-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --abb-success: #00875A;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: #F8F9FA;
+            color: var(--abb-black);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Header */
+        header {
+            background-color: var(--abb-white);
+            border-bottom: 3px solid var(--abb-red);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            z-index: 20;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .abb-logo-img {
+            height: 38px;
+            width: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .header-title {
+            border-left: 1px solid var(--abb-border);
+            padding-left: 1.5rem;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--abb-dark-gray);
+            letter-spacing: 0.3px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+            color: var(--abb-mid-gray);
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            background-color: var(--abb-success);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 3px rgba(0, 135, 90, 0.2);
+        }
+
+        .config-btn {
+            background: none;
+            border: 1px solid var(--abb-border);
+            padding: 0.35rem 0.65rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            color: var(--abb-mid-gray);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+
+        .config-btn:hover {
+            color: var(--abb-black);
+            border-color: var(--abb-dark-gray);
+        }
+
+        /* Main Workspace */
+        .platform-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 64px);
+            overflow: hidden;
+        }
+
+        /* Left Side: Form Panel */
+        .form-panel {
+            width: 45%;
+            min-width: 440px;
+            max-width: 600px;
+            background: var(--abb-white);
+            border-right: 1px solid var(--abb-border);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            z-index: 10;
+        }
+
+        .form-scroll-content {
+            padding: 2.2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-scroll-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .form-scroll-content::-webkit-scrollbar-thumb {
+            background: #CCC;
+            border-radius: 3px;
+        }
+
+        .form-heading {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-heading h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--abb-black);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-heading p {
+            font-size: 0.9rem;
+            color: var(--abb-mid-gray);
+            line-height: 1.4;
+        }
+
+        .input-group {
+            margin-bottom: 1.4rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--abb-dark-gray);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            border: 1px solid var(--abb-border);
+            border-radius: 2px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--abb-black);
+            background: var(--abb-accent-bg);
+            transition: all 0.2s ease;
+        }
+
+        .input-control:focus {
+            outline: none;
+            border-color: var(--abb-red);
+            background: var(--abb-white);
+            box-shadow: 0 0 0 1px var(--abb-red);
+        }
+
+        textarea.input-control {
+            resize: vertical;
+            min-height: 85px;
+        }
+
+        /* Documents Verification Box */
+        .documents-card {
+            background: #FAFAFA;
+            border: 1px solid var(--abb-border);
+            border-radius: 4px;
+            padding: 1.2rem;
+            margin-top: 1.6rem;
+            margin-bottom: 1.6rem;
+        }
+
+        .documents-card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--abb-black);
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .documents-card-title i {
+            color: var(--abb-red);
+        }
+
+        .documents-instruction {
+            font-size: 0.82rem;
+            color: var(--abb-mid-gray);
+            margin-bottom: 1rem;
+            line-height: 1.35;
+        }
+
+        .doc-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 0.8rem;
+            background: var(--abb-white);
+            border: 1px solid var(--abb-border);
+            border-radius: 3px;
+            margin-bottom: 0.6rem;
+            transition: all 0.15s ease;
+        }
+
+        .doc-item:hover {
+            border-color: #BBB;
+            background: #FCFCFC;
+        }
+
+        .doc-item.active-preview {
+            border-color: var(--abb-red);
+            background: rgba(255, 0, 15, 0.02);
+            box-shadow: 0 0 0 1px var(--abb-red);
+        }
+
+        .doc-item-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Checkbox styling */
+        .doc-item-left input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 19px;
+            height: 19px;
+            border: 2px solid #999;
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+            outline: none;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+        }
+
+        .doc-item-left input[type="checkbox"]:checked {
+            background-color: var(--abb-red);
+            border-color: var(--abb-red);
+        }
+
+        .doc-item-left input[type="checkbox"]:checked::after {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: white;
+            font-size: 11px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .doc-name {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--abb-dark-gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .doc-view-btn {
+            background: none;
+            border: 1px solid var(--abb-border);
+            padding: 0.35rem 0.65rem;
+            border-radius: 2px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--abb-dark-gray);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .doc-view-btn:hover {
+            background: var(--abb-black);
+            color: var(--abb-white);
+            border-color: var(--abb-black);
+        }
+
+        .doc-view-btn.active {
+            background: var(--abb-red);
+            color: var(--abb-white);
+            border-color: var(--abb-red);
+        }
+
+        /* Action Buttons */
+        .form-footer {
+            padding: 1.2rem 2.2rem;
+            border-top: 1px solid var(--abb-border);
+            background: var(--abb-white);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.6rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--abb-red);
+            color: var(--abb-white);
+            border: 2px solid var(--abb-red);
+        }
+
+        .btn-primary:hover {
+            background: var(--abb-red-dark);
+            border-color: var(--abb-red-dark);
+            box-shadow: 0 4px 12px rgba(255, 0, 15, 0.25);
+        }
+
+        .btn-primary:disabled {
+            background: #999;
+            border-color: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--abb-dark-gray);
+            border: 1px solid var(--abb-border);
+        }
+
+        .btn-outline:hover {
+            background: var(--abb-light-gray);
+            color: var(--abb-black);
+        }
+
+        /* Right Side: PDF Reader Panel */
+        .viewer-panel {
+            flex: 1;
+            background: #4A4A4A;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-left: 1px solid #333;
+        }
+
+        .viewer-header {
+            background: #2B2B2B;
+            color: var(--abb-white);
+            height: 48px;
+            padding: 0 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 5;
+        }
+
+        .viewer-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        .viewer-title-group i {
+            color: var(--abb-red);
+        }
+
+        .current-doc-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            color: #EEE;
+        }
+
+        .viewer-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .viewer-btn {
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #DDD;
+            padding: 0.35rem 0.7rem;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+        }
+
+        .viewer-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: #FFF;
+        }
+
+        .pdf-frame-container {
+            flex: 1;
+            width: 100%;
+            height: calc(100% - 48px);
+            background: #525659;
+            position: relative;
+        }
+
+        iframe#pdfFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* Success Overlay Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-card {
+            background: var(--abb-white);
+            width: 90%;
+            max-width: 500px;
+            padding: 2.5rem 2rem;
+            border-radius: 4px;
+            border-top: 5px solid var(--abb-red);
+            box-shadow: var(--abb-shadow);
+            text-align: center;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-icon {
+            font-size: 3.5rem;
+            color: var(--abb-success);
+            margin-bottom: 1.2rem;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            color: var(--abb-black);
+        }
+
+        .modal-desc {
+            font-size: 0.95rem;
+            color: var(--abb-dark-gray);
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .ticket-code {
+            display: inline-block;
+            background: var(--abb-light-gray);
+            padding: 0.4rem 0.8rem;
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            border: 1px dashed #BBB;
+            margin-bottom: 1.2rem;
+            color: var(--abb-black);
+        }
+
+        .email-status-banner {
+            font-size: 0.82rem;
+            padding: 0.6rem;
+            border-radius: 3px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .email-status-banner.sent {
+            background: #E3FCEF;
+            color: #006644;
+            border: 1px solid #ABF5D1;
+        }
+
+        .email-status-banner.not-configured {
+            background: #FFF0B3;
+            color: #8A6D3B;
+            border: 1px solid #FFE380;
+        }
+
+        @media (max-width: 900px) {
+            .platform-container {
+                flex-direction: column;
+                height: auto;
+                overflow: auto;
+            }
+            body {
+                overflow: auto;
+                height: auto;
+            }
+            .form-panel {
+                width: 100%;
+                min-width: unset;
+                max-width: unset;
+            }
+            .viewer-panel {
+                height: 550px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Header -->
+    <header>
+        <div class="brand-section">
+            <img src="abb-logo.png" alt="ABB" class="abb-logo-img" onerror="this.outerHTML='<span style=\'font-weight:900;font-size:2.2rem;color:#FF000F;\'>ABB</span>'">
+            <div class="header-title">Portal de Gestión de Accesos | Área de Pruebas</div>
+        </div>
+        <div class="header-right">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                <span>Sistema Operativo</span>
+            </div>
+            <button type="button" class="config-btn" onclick="openConfigModal()" title="Configurar webhook de Google Apps Script">
+                <i class="fa-solid fa-gear"></i> Correo
+            </button>
+        </div>
+    </header>
+
+    <!-- Platform Container -->
+    <div class="platform-container">
+        
+        <!-- Left: Form Section -->
+        <div class="form-panel">
+            <div class="form-scroll-content">
+                <div class="form-heading">
+                    <h2>Solicitud de Permiso de Ingreso</h2>
+                    <p>Complete los datos del solicitante y confirme la lectura obligatoria de las normativas de seguridad y procedimientos autorizados.</p>
+                </div>
+
+                <form id="accessForm">
+                    <div class="input-group">
+                        <label for="nombre">Nombre Completo del Solicitante *</label>
+                        <input type="text" id="nombre" class="input-control" placeholder="Ej. Juan Pérez García" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="fecha">Fecha de Ingreso Requerida *</label>
+                        <input type="date" id="fecha" class="input-control" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="motivo">Motivo de la Actividad / Trabajo a Ejecutar *</label>
+                        <textarea id="motivo" class="input-control" placeholder="Describa el objetivo de la prueba, equipos a inspeccionar o tareas a desarrollar..." required></textarea>
+                    </div>
+
+                    <!-- Documents Acceptance Box -->
+                    <div class="documents-card">
+                        <div class="documents-card-title">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Normativas Obligatorias</span>
+                        </div>
+                        <div class="documents-instruction">
+                            Haga clic en <strong>"Ver"</strong> para inspeccionar cada documento en el visor PDF lateral. Marque la casilla tras haber completado la lectura.
+                        </div>
+
+                        <!-- Doc 1 -->
+                        <div class="doc-item" id="item-doc1">
+                            <div class="doc-item-left">
+                                <input type="checkbox" id="chk1" name="acceptedDocs" required>
+                                <label for="chk1" class="doc-name" title="Ax1 Listado Personal Autorizado.pdf">
+                                    Ax1 Listado Personal Autorizado.pdf
+                                </label>
+                            </div>
+                            <button type="button" class="doc-view-btn active" onclick="loadPdf('Ax1 Listado Personal Autorizado.pdf', 'Ax1 Listado Personal Autorizado', 'item-doc1', this)">
+                                <i class="fa-regular fa-file-pdf"></i> Ver
+                            </button>
+                        </div>
+
+                        <!-- Doc 2 -->
+                        <div class="doc-item" id="item-doc2">
+                            <div class="doc-item-left">
+                                <input type="checkbox" id="chk2" name="acceptedDocs" required>
+                                <label for="chk2" class="doc-name" title="Ax2 Listado EPP mínimo.pdf">
+                                    Ax2 Listado EPP mínimo.pdf
+                                </label>
+                            </div>
+                            <button type="button" class="doc-view-btn" onclick="loadPdf('Ax2 Listado EPP mínimo.pdf', 'Ax2 Listado EPP mínimo', 'item-doc2', this)">
+                                <i class="fa-regular fa-file-pdf"></i> Ver
+                            </button>
+                        </div>
+
+                        <!-- Doc 3 -->
+                        <div class="doc-item" id="item-doc3">
+                            <div class="doc-item-left">
+                                <input type="checkbox" id="chk3" name="acceptedDocs" required>
+                                <label for="chk3" class="doc-name" title="Uso del área de pruebas ELSE v2.pdf">
+                                    Uso del área de pruebas ELSE v2.pdf
+                                </label>
+                            </div>
+                            <button type="button" class="doc-view-btn" onclick="loadPdf('Uso del área de pruebas ELSE v2.pdf', 'Uso del área de pruebas ELSE v2', 'item-doc3', this)">
+                                <i class="fa-regular fa-file-pdf"></i> Ver
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="form-footer">
+                <button type="button" class="btn btn-outline" onclick="resetForm()">Limpiar</button>
+                <button type="button" id="btnSubmit" class="btn btn-primary" onclick="submitRequest()">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar Solicitud
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: PDF Reader Panel -->
+        <div class="viewer-panel">
+            <div class="viewer-header">
+                <div class="viewer-title-group">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <span>Lector Oficial de Documentación:</span>
+                    <span class="current-doc-badge" id="currentDocLabel">Ax1 Listado Personal Autorizado.pdf</span>
+                </div>
+                <div class="viewer-actions">
+                    <button class="viewer-btn" onclick="openFullscreen()" title="Abrir en pestaña completa">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Pestaña completa
+                    </button>
+                </div>
+            </div>
+            
+            <div class="pdf-frame-container">
+                <iframe id="pdfFrame" src="Ax1 Listado Personal Autorizado.pdf#toolbar=1&navpanes=0"></iframe>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-card">
+            <div class="modal-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="modal-title">Solicitud Registrada</h3>
+            <p class="modal-desc" id="modalMessage">
+                La solicitud de acceso al Área de Pruebas ha sido procesada con éxito.
+            </p>
+            <div class="ticket-code" id="ticketCode">ABB-REQ-89412</div>
+            <div id="emailNotice" class="email-status-banner not-configured">
+                <i class="fa-solid fa-envelope"></i>
+                <span id="emailStatusText">Notificación por correo lista.</span>
+            </div>
+            <div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="closeModal()">Aceptar y Finalizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Configuration Modal -->
+    <div class="modal-overlay" id="configModal">
+        <div class="modal-card" style="text-align: left; max-width: 560px;">
+            <h3 class="modal-title" style="margin-bottom: 0.5rem; text-align: left;">
+                <i class="fa-brands fa-google" style="color: var(--abb-red); margin-right: 0.5rem;"></i>
+                Configuración de Google Apps Script
+            </h3>
+            <p style="font-size: 0.88rem; color: #666; margin-bottom: 1.2rem; line-height: 1.4;">
+                Pega la URL de tu Web App de Google Apps Script para enviar automáticamente las respuestas por correo electrónico cada vez que alguien envíe el formulario.
+            </p>
+
+            <div class="input-group">
+                <label for="appsScriptUrl">URL Web App de Google Apps Script:</label>
+                <input type="url" id="appsScriptUrl" class="input-control" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-outline" onclick="closeConfigModal()">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="saveConfig()">Guardar URL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default Google Apps Script URL stored in localStorage
+        const STORAGE_KEY = "abb_google_script_url";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('fecha');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+
+            const savedUrl = localStorage.getItem(STORAGE_KEY);
+            if (savedUrl) {
+                document.getElementById('appsScriptUrl').value = savedUrl;
+            }
+        });
+
+        let currentPdfFile = "Ax1 Listado Personal Autorizado.pdf";
+
+        function loadPdf(fileName, friendlyName, itemWrapperId, btnElement) {
+            currentPdfFile = fileName;
+            const iframe = document.getElementById('pdfFrame');
+            iframe.src = encodeURIComponent(fileName) + '#toolbar=1&navpanes=0';
+            document.getElementById('currentDocLabel').innerText = fileName;
+
+            document.querySelectorAll('.doc-view-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.doc-item').forEach(i => i.classList.remove('active-preview'));
+
+            if (btnElement) btnElement.classList.add('active');
+            const wrapper = document.getElementById(itemWrapperId);
+            if (wrapper) wrapper.classList.add('active-preview');
+        }
+
+        function openFullscreen() {
+            window.open(encodeURIComponent(currentPdfFile), '_blank');
+        }
+
+        function resetForm() {
+            if (confirm("¿Está seguro de que desea restablecer el formulario?")) {
+                document.getElementById('accessForm').reset();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('fecha').value = today;
+            }
+        }
+
+        function openConfigModal() {
+            document.getElementById('configModal').style.display = 'flex';
+        }
+
+        function closeConfigModal() {
+            document.getElementById('configModal').style.display = 'none';
+        }
+
+        function saveConfig() {
+            const url = document.getElementById('appsScriptUrl').value.trim();
+            if (url) {
+                localStorage.setItem(STORAGE_KEY, url);
+                alert("URL de Google Apps Script guardada correctamente.");
+            } else {
+                localStorage.removeItem(STORAGE_KEY);
+                alert("URL eliminada. Los envíos no se enviarán a Google Apps Script.");
+            }
+            closeConfigModal();
+        }
+
+        async function submitRequest() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const fecha = document.getElementById('fecha').value;
+            const motivo = document.getElementById('motivo').value.trim();
+
+            if (!nombre) {
+                alert("Por favor ingrese el Nombre Completo.");
+                document.getElementById('nombre').focus();
+                return;
+            }
+
+            if (!fecha) {
+                alert("Por favor seleccione la Fecha requerida.");
+                document.getElementById('fecha').focus();
+                return;
+            }
+
+            if (!motivo) {
+                alert("Por favor describa el Motivo del ingreso.");
+                document.getElementById('motivo').focus();
+                return;
+            }
+
+            const chk1 = document.getElementById('chk1').checked;
+            const chk2 = document.getElementById('chk2').checked;
+            const chk3 = document.getElementById('chk3').checked;
+
+            if (!chk1 || !chk2 || !chk3) {
+                alert("Debe confirmar que ha leído y está de acuerdo con los 3 documentos normativos obligatorios antes de continuar.");
+                return;
+            }
+
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
+
+            const randomCode = 'ABB-AP-' + Math.floor(100000 + Math.random() * 900000);
+            const scriptUrl = localStorage.getItem(STORAGE_KEY) || document.getElementById('appsScriptUrl').value.trim();
+
+            const payload = {
+                radicado: randomCode,
+                nombre: nombre,
+                fecha: fecha,
+                motivo: motivo,
+                documentosAceptados: [
+                    "Ax1 Listado Personal Autorizado.pdf",
+                    "Ax2 Listado EPP mínimo.pdf",
+                    "Uso del área de pruebas ELSE v2.pdf"
+                ]
+            };
+
+            let emailNoticeText = "Notificación registrada localmente.";
+            let isEmailSent = false;
+
+            if (scriptUrl) {
+                try {
+                    // Send to Google Apps Script Web App
+                    await fetch(scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors', // Standard Google Apps Script CORS bypass
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    isEmailSent = true;
+                    emailNoticeText = "Notificación enviada a tu correo vía Google Apps Script.";
+                } catch (err) {
+                    console.error("Error al contactar Google Apps Script:", err);
+                    emailNoticeText = "Formulario registrado (Hubo un detalle al enviar el correo automático).";
+                }
+            } else {
+                emailNoticeText = "Nota: Puedes vincular tu Web App de Google Apps Script en el botón de engranaje superior.";
+            }
+
+            // Update confirmation modal
+            document.getElementById('ticketCode').innerText = randomCode;
+            document.getElementById('modalMessage').innerHTML = `
+                Estimado(a) <strong>${nombre}</strong>, su solicitud para el día <strong>${fecha}</strong> ha sido radicada formalmente.
+            `;
+
+            const emailBanner = document.getElementById('emailNotice');
+            document.getElementById('emailStatusText').innerText = emailNoticeText;
+            if (isEmailSent) {
+                emailBanner.className = "email-status-banner sent";
+            } else {
+                emailBanner.className = "email-status-banner not-configured";
+            }
+
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Solicitud';
+
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            document.getElementById('accessForm').reset();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').value = today;
+        }
+    </script>
+</body>
+</html>
