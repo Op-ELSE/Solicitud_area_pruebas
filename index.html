@@ -709,7 +709,7 @@
             </div>
             
             <div class="pdf-frame-container">
-                <iframe id="pdfFrame" src="Ax1 Listado Personal Autorizado.pdf#toolbar=1&navpanes=0"></iframe>
+                <iframe id="pdfFrame" src="Ax1 Listado Personal Autorizado.pdf#toolbar=1&navpanes=0&pagemode=none&view=FitH"></iframe>
             </div>
         </div>
 
@@ -750,7 +750,8 @@
         function loadPdf(fileName, friendlyName, itemWrapperId, btnElement) {
             currentPdfFile = fileName;
             const iframe = document.getElementById('pdfFrame');
-            iframe.src = encodeURIComponent(fileName) + '#toolbar=1&navpanes=0';
+            // Carga el PDF ocultando paneles laterales de comentarios o miniaturas
+            iframe.src = encodeURIComponent(fileName) + '#toolbar=1&navpanes=0&pagemode=none&view=FitH';
             document.getElementById('currentDocLabel').innerText = fileName;
 
             document.querySelectorAll('.doc-view-btn').forEach(b => b.classList.remove('active'));
@@ -841,15 +842,25 @@
 
             if (pendingPayload && GOOGLE_SCRIPT_WEBAPP_URL) {
                 try {
-                    // Activa el Google Apps Script y envía el correo
+                    // Preparamos los parámetros como formulario estándar (evita bloqueos de preflight/OPTIONS de Google)
+                    const params = new URLSearchParams();
+                    params.append('radicado', pendingPayload.radicado);
+                    params.append('nombre', pendingPayload.nombre);
+                    params.append('fecha', pendingPayload.fecha);
+                    params.append('motivo', pendingPayload.motivo);
+                    params.append('documentosAceptados', JSON.stringify(pendingPayload.documentosAceptados));
+
+                    // Enviar mediante fetch con no-cors y form-urlencoded
                     await fetch(GOOGLE_SCRIPT_WEBAPP_URL, {
                         method: 'POST',
                         mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(pendingPayload)
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: params.toString()
                     });
                 } catch (err) {
-                    console.error("Detalle al activar script:", err);
+                    console.error("Detalle al enviar a Google Apps Script:", err);
                 }
             }
 
