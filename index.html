@@ -171,6 +171,17 @@
             line-height: 1.4;
         }
 
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .form-row .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
         .input-group {
             margin-bottom: 1.4rem;
         }
@@ -707,6 +718,17 @@
                         <input type="date" id="fecha" class="input-control" required>
                     </div>
 
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="horaIngreso">Hora de Ingreso *</label>
+                            <input type="time" id="horaIngreso" class="input-control" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="horaTermino">Hora de Término *</label>
+                            <input type="time" id="horaTermino" class="input-control" required>
+                        </div>
+                    </div>
+
                     <div class="input-group">
                         <label for="motivo">Motivo de la Actividad / Trabajo a Ejecutar *</label>
                         <textarea id="motivo" class="input-control" placeholder="Describa el objetivo de la prueba, equipos a inspeccionar o tareas a desarrollar..." required></textarea>
@@ -931,6 +953,8 @@
                 document.getElementById('accessForm').reset();
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('fecha').value = today;
+                document.getElementById('horaIngreso').value = '';
+                document.getElementById('horaTermino').value = '';
 
                 // Reiniciar estados de visualización
                 docViewed.chk3 = false;
@@ -958,6 +982,8 @@
         function submitRequest() {
             const nombre = document.getElementById('nombre').value.trim();
             const fecha = document.getElementById('fecha').value;
+            const horaIngreso = document.getElementById('horaIngreso').value;
+            const horaTermino = document.getElementById('horaTermino').value;
             const motivo = document.getElementById('motivo').value.trim();
 
             if (!nombre) {
@@ -969,6 +995,24 @@
             if (!fecha) {
                 alert("Por favor seleccione la Fecha requerida.");
                 document.getElementById('fecha').focus();
+                return;
+            }
+
+            if (!horaIngreso) {
+                alert("Por favor ingrese la Hora de Ingreso.");
+                document.getElementById('horaIngreso').focus();
+                return;
+            }
+
+            if (!horaTermino) {
+                alert("Por favor ingrese la Hora de Término.");
+                document.getElementById('horaTermino').focus();
+                return;
+            }
+
+            if (horaIngreso >= horaTermino) {
+                alert("La Hora de Término debe ser posterior a la Hora de Ingreso.");
+                document.getElementById('horaTermino').focus();
                 return;
             }
 
@@ -989,11 +1033,13 @@
 
             const randomCode = 'ABB-AP-' + Math.floor(100000 + Math.random() * 900000);
 
-            // Guardar payload con el orden requerido: Uso de área de pruebas, Ax1, Ax2
+            // Guardar payload con el orden requerido: Uso de área de pruebas, Ax1, Ax2 y horas
             pendingPayload = {
                 radicado: randomCode,
                 nombre: nombre,
                 fecha: fecha,
+                horaIngreso: horaIngreso,
+                horaTermino: horaTermino,
                 motivo: motivo,
                 documentosAceptados: [
                     "Uso del área de pruebas ELSE v2.pdf",
@@ -1004,7 +1050,7 @@
 
             // Mensaje en la ventana modal
             document.getElementById('modalMessage').innerHTML = `
-                Estimado(a) <strong>${nombre}</strong>, su solicitud para el día <strong>${fecha}</strong> ha sido radicada formalmente.
+                Estimado(a) <strong>${nombre}</strong>, su solicitud para el día <strong>${fecha}</strong> en el horario de <strong>${horaIngreso}</strong> a <strong>${horaTermino}</strong> ha sido radicada formalmente.
             `;
 
             // Resetear estado del botón Aceptar y Finalizar
@@ -1028,6 +1074,8 @@
                     params.append('radicado', pendingPayload.radicado);
                     params.append('nombre', pendingPayload.nombre);
                     params.append('fecha', pendingPayload.fecha);
+                    params.append('horaIngreso', pendingPayload.horaIngreso);
+                    params.append('horaTermino', pendingPayload.horaTermino);
                     params.append('motivo', pendingPayload.motivo);
                     params.append('documentosAceptados', JSON.stringify(pendingPayload.documentosAceptados));
 

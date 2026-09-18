@@ -33,6 +33,8 @@ function doPost(e) {
     const radicado = data.radicado || ("ABB-AP-" + Math.floor(100000 + Math.random() * 900000));
     const nombre = data.nombre || "No especificado";
     const fecha = data.fecha || "No especificada";
+    const horaIngreso = data.horaIngreso || "No especificada";
+    const horaTermino = data.horaTermino || "No especificada";
     const motivo = data.motivo || "No especificado";
     const fechaRegistro = new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" });
 
@@ -69,6 +71,10 @@ function doPost(e) {
               <td style="padding: 10px 14px; color: #111;">${fecha}</td>
             </tr>
             <tr style="border-bottom: 1px solid #EFEFEF;">
+              <td style="padding: 10px 14px; font-weight: bold; color: #333;">Horario de permanencia:</td>
+              <td style="padding: 10px 14px; color: #111; font-weight: bold;">${horaIngreso} a ${horaTermino}</td>
+            </tr>
+            <tr style="background-color: #F9F9F9; border-bottom: 1px solid #EFEFEF;">
               <td style="padding: 10px 14px; font-weight: bold; color: #333;">Fecha de registro:</td>
               <td style="padding: 10px 14px; color: #111;">${fechaRegistro}</td>
             </tr>
