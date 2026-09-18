@@ -708,10 +708,28 @@
                 </div>
 
                 <form id="accessForm">
-                    <div class="input-group">
-                        <label for="nombre">Nombre Completo del Solicitante *</label>
-                        <input type="text" id="nombre" class="input-control" placeholder="Ej. Juan Pérez García" required>
-                    </div>
+                   <div class="input-group">
+    <label for="nombre">Solicitante *</label>
+    
+    <input
+        list="listaSolicitantes"
+        id="nombre"
+        class="input-control"
+        placeholder="Buscar solicitante..."
+        required>
+
+    <datalist id="listaSolicitantes">
+        <option value="Mario Arellano">
+        <option value="Anthony Choquehuanca">
+        <option value="Delny Galindo">
+        <option value="Jose Herrera">
+        <option value="David Ñahui">
+        <option value="Carlos Sotomayor">
+        <option value="Saul Suarez">
+        <option value="Fredy Ureta">
+        <option value="Stevens Poma">
+    </datalist>
+</div>
 
                     <div class="input-group">
                         <label for="fecha">Fecha de Ingreso Requerida *</label>
