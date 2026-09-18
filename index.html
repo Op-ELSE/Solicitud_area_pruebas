@@ -850,7 +850,7 @@
 
     <script>
         // URL oficial de Google Apps Script proporcionada
-        const GOOGLE_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzCYEk6cItwW9ndbI3Ivxu3M13h8qBbdshQ4m4n0yhTTYfJUnNstHSM4-hKOKKvS38u0A/exec";
+        const GOOGLE_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwt-kQ95Qa5QAxpsuserthi2nYTJFPL6IjIA4TawmNHd9f5msYmDqzJeAsIgReCSdAwig/exec";
 
         let pendingPayload = null;
         let currentPdfFile = "Uso del área de pruebas ELSE v2.pdf";
@@ -1032,9 +1032,11 @@
             }
 
             const randomCode = 'ABB-AP-' + Math.floor(100000 + Math.random() * 900000);
+            const reqId = 'solicitud_' + Date.now();
 
-            // Guardar payload con el orden requerido: Uso de área de pruebas, Ax1, Ax2 y horas
+            // Guardar payload con los campos del formulario
             pendingPayload = {
+                id: reqId,
                 radicado: randomCode,
                 nombre: nombre,
                 fecha: fecha,
@@ -1042,9 +1044,18 @@
                 horaTermino: horaTermino,
                 motivo: motivo,
                 documentosAceptados: [
-                    "Uso del área de pruebas ELSE v2.pdf",
-                    "Ax1 Listado Personal Autorizado.pdf",
-                    "Ax2 Listado EPP mínimo.pdf"
+                    {
+                        documento: "Uso del área de pruebas ELSE v2.pdf",
+                        aceptado: true
+                    },
+                    {
+                        documento: "Ax1 Listado Personal Autorizado.pdf",
+                        aceptado: true
+                    },
+                    {
+                        documento: "Ax2 Listado EPP mínimo.pdf",
+                        aceptado: true
+                    }
                 ]
             };
 
@@ -1071,6 +1082,7 @@
                 try {
                     // Preparamos los parámetros como formulario estándar (evita bloqueos de preflight/OPTIONS de Google)
                     const params = new URLSearchParams();
+                    params.append('id', pendingPayload.id);
                     params.append('radicado', pendingPayload.radicado);
                     params.append('nombre', pendingPayload.nombre);
                     params.append('fecha', pendingPayload.fecha);

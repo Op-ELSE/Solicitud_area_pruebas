@@ -31,84 +31,71 @@ function doPost(e) {
     }
 
     const radicado = data.radicado || ("ABB-AP-" + Math.floor(100000 + Math.random() * 900000));
-    const nombre = data.nombre || "No especificado";
+    const id = data.id || ("solicitud_" + new Date().getTime());
+    const nombre = data.nombre || data.solicitante || "No especificado";
     const fecha = data.fecha || "No especificada";
     const horaIngreso = data.horaIngreso || "No especificada";
     const horaTermino = data.horaTermino || "No especificada";
     const motivo = data.motivo || "No especificado";
-    const fechaRegistro = new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" });
+    const fechaRegistro = data.fechaRegistro || new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" });
+
+    // Procesar documentos aceptados
+    let docsAceptados = [];
+    if (typeof data.documentosAceptados === "string") {
+      try {
+        docsAceptados = JSON.parse(data.documentosAceptados);
+      } catch (err) {
+        docsAceptados = [data.documentosAceptados];
+      }
+    } else if (Array.isArray(data.documentosAceptados)) {
+      docsAceptados = data.documentosAceptados;
+    } else {
+      docsAceptados = [
+        "Uso del área de pruebas ELSE v2.pdf",
+        "Ax1 Listado Personal Autorizado.pdf",
+        "Ax2 Listado EPP mínimo.pdf"
+      ];
+    }
+
+    const normativasFormateadas = docsAceptados.map(function(doc) {
+      if (typeof doc === "string") {
+        return {
+          documento: doc,
+          aceptado: true
+        };
+      }
+      return doc;
+    });
+
+    // Construcción del objeto JSON con los campos de la solicitud
+    const payloadJson = {
+      id: id,
+      radicado: radicado,
+      solicitante: nombre,
+      fecha: fecha,
+      horaIngreso: horaIngreso,
+      horaTermino: horaTermino,
+      motivo: motivo,
+      fechaRegistro: fechaRegistro,
+      documentosAceptados: normativasFormateadas
+    };
+
+    // Formato RAW_JSON requerido
+    const rawJsonText = "RAW_JSON\t\n" + JSON.stringify(payloadJson, null, 2);
 
     // Asunto del correo
     const asunto = `[ABB Área de Pruebas] Solicitud de Ingreso - ${nombre} (${radicado})`;
 
-    // Cuerpo en formato HTML profesional estilo ABB
-    const htmlBody = `
-      <div style="font-family: Arial, Helvetica, sans-serif; max-width: 650px; margin: 0 auto; border: 1px solid #E0E0E0; border-top: 5px solid #FF000F; background: #FFFFFF;">
-        <div style="padding: 24px; border-bottom: 1px solid #EEEEEE; display: flex; align-items: center; justify-content: space-between;">
-          <h2 style="color: #FF000F; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px;">ABB</h2>
-          <span style="background: #F4F4F4; padding: 6px 12px; font-size: 12px; font-weight: bold; color: #555; border-radius: 3px;">
-            ${radicado}
-          </span>
-        </div>
-        
-        <div style="padding: 28px;">
-          <h3 style="color: #1A1A1A; margin-top: 0; font-size: 18px;">Notificación de Solicitud de Ingreso al Área de Pruebas</h3>
-          <p style="color: #666; font-size: 14px; line-height: 1.5;">
-            Se ha registrado una nueva solicitud formal de acceso con aceptación obligatoria de los procedimientos y normativas de seguridad.
-          </p>
-
-          <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
-            <tr style="background-color: #F9F9F9; border-bottom: 1px solid #EFEFEF;">
-              <td style="padding: 10px 14px; font-weight: bold; color: #333; width: 35%;">Radicado:</td>
-              <td style="padding: 10px 14px; color: #111; font-family: monospace; font-weight: bold;">${radicado}</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #EFEFEF;">
-              <td style="padding: 10px 14px; font-weight: bold; color: #333;">Solicitante:</td>
-              <td style="padding: 10px 14px; color: #111;">${nombre}</td>
-            </tr>
-            <tr style="background-color: #F9F9F9; border-bottom: 1px solid #EFEFEF;">
-              <td style="padding: 10px 14px; font-weight: bold; color: #333;">Fecha requerida:</td>
-              <td style="padding: 10px 14px; color: #111;">${fecha}</td>
-            </tr>
-            <tr style="border-bottom: 1px solid #EFEFEF;">
-              <td style="padding: 10px 14px; font-weight: bold; color: #333;">Horario de permanencia:</td>
-              <td style="padding: 10px 14px; color: #111; font-weight: bold;">${horaIngreso} a ${horaTermino}</td>
-            </tr>
-            <tr style="background-color: #F9F9F9; border-bottom: 1px solid #EFEFEF;">
-              <td style="padding: 10px 14px; font-weight: bold; color: #333;">Fecha de registro:</td>
-              <td style="padding: 10px 14px; color: #111;">${fechaRegistro}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px 14px; font-weight: bold; color: #333; vertical-align: top;">Motivo del Trabajo:</td>
-              <td style="padding: 10px 14px; color: #111; white-space: pre-wrap;">${motivo}</td>
-            </tr>
-          </table>
-
-          <div style="background-color: #FAFAFA; border: 1px solid #E5E5E5; border-left: 4px solid #00875A; padding: 14px 18px; margin-top: 25px; border-radius: 2px;">
-            <h4 style="margin: 0 0 8px 0; color: #00875A; font-size: 14px;">✓ Aceptación de Normativas Confirmada:</h4>
-            <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #444; line-height: 1.6;">
-              <li>Uso del área de pruebas ELSE v2.pdf</li>
-              <li>Ax1 Listado Personal Autorizado.pdf</li>
-              <li>Ax2 Listado EPP mínimo.pdf</li>
-            </ul>
-          </div>
-        </div>
-
-        <div style="background: #F4F4F4; padding: 14px 24px; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #EAEAEA;">
-          Este es un correo automático emitido por la Plataforma de Área de Pruebas de ABB. Por favor no responder directamente a este mensaje.
-        </div>
-      </div>
-    `;
-
-    // Enviar correo
+    // Enviar correo con formato RAW_JSON en texto plano y bloque preformateado HTML
     MailApp.sendEmail({
       to: DESTINATARIO_CORREO,
       subject: asunto,
-      htmlBody: htmlBody
+      body: rawJsonText,
+      htmlBody: `<pre style="font-family: Consolas, 'Courier New', monospace; font-size: 13px; background-color: #f8f9fa; color: #212529; padding: 16px; border: 1px solid #e9ecef; border-radius: 4px; white-space: pre-wrap; word-break: break-word;">${rawJsonText}</pre>`
     });
 
     return ContentService
-      .createTextOutput(JSON.stringify({ status: "success", radicado: radicado }))
+      .createTextOutput(JSON.stringify({ status: "success", radicado: radicado, id: id }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (error) {
