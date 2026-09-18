@@ -81,9 +81,9 @@ function doPost(e) {
           <div style="background-color: #FAFAFA; border: 1px solid #E5E5E5; border-left: 4px solid #00875A; padding: 14px 18px; margin-top: 25px; border-radius: 2px;">
             <h4 style="margin: 0 0 8px 0; color: #00875A; font-size: 14px;">✓ Aceptación de Normativas Confirmada:</h4>
             <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #444; line-height: 1.6;">
+              <li>Uso del área de pruebas ELSE v2.pdf</li>
               <li>Ax1 Listado Personal Autorizado.pdf</li>
               <li>Ax2 Listado EPP mínimo.pdf</li>
-              <li>Uso del área de pruebas ELSE v2.pdf</li>
             </ul>
           </div>
         </div>

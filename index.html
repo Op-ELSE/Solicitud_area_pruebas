@@ -305,6 +305,35 @@
             transform: translate(-50%, -50%);
         }
 
+        .doc-item-left input[type="checkbox"]:disabled {
+            background-color: #ECECEC;
+            border-color: #CCC;
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        .doc-status-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .doc-status-badge.pending {
+            background: #FFF3CD;
+            color: #856404;
+            border: 1px solid #FFEEBA;
+        }
+
+        .doc-status-badge.completed {
+            background: #E3FCEF;
+            color: #006644;
+            border: 1px solid #ABF5D1;
+        }
+
         .doc-name {
             font-size: 0.88rem;
             font-weight: 500;
@@ -469,7 +498,7 @@
         .pdf-frame-container {
             flex: 1;
             width: 100%;
-            height: calc(100% - 48px);
+            min-height: 0;
             background: #525659;
             position: relative;
         }
@@ -479,6 +508,56 @@
             height: 100%;
             border: none;
             display: block;
+        }
+
+        /* Viewer bottom confirmation bar */
+        .viewer-confirmation-bar {
+            background: #252525;
+            color: #FFF;
+            padding: 0.8rem 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            border-top: 2px solid #383838;
+            z-index: 10;
+        }
+
+        .viewer-instruction {
+            font-size: 0.84rem;
+            color: #DDD;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .viewer-confirm-btn {
+            background: var(--abb-red);
+            color: #FFF;
+            border: none;
+            padding: 0.55rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .viewer-confirm-btn:hover {
+            background: var(--abb-red-dark);
+            box-shadow: 0 2px 10px rgba(255, 0, 15, 0.4);
+        }
+
+        .viewer-confirm-btn.confirmed {
+            background: var(--abb-success);
+            cursor: default;
+            box-shadow: none;
         }
 
         /* Success Overlay Modal */
@@ -643,41 +722,44 @@
                             Haga clic en <strong>"Ver"</strong> para inspeccionar cada documento en el visor PDF lateral. Marque la casilla tras haber completado la lectura.
                         </div>
 
-                        <!-- Doc 1 -->
-                        <div class="doc-item" id="item-doc1">
-                            <div class="doc-item-left">
-                                <input type="checkbox" id="chk1" name="acceptedDocs" required>
-                                <label for="chk1" class="doc-name" title="Ax1 Listado Personal Autorizado.pdf">
-                                    Ax1 Listado Personal Autorizado.pdf
-                                </label>
-                            </div>
-                            <button type="button" class="doc-view-btn active" onclick="loadPdf('Ax1 Listado Personal Autorizado.pdf', 'Ax1 Listado Personal Autorizado', 'item-doc1', this)">
-                                <i class="fa-regular fa-file-pdf"></i> Ver
-                            </button>
-                        </div>
-
-                        <!-- Doc 2 -->
-                        <div class="doc-item" id="item-doc2">
-                            <div class="doc-item-left">
-                                <input type="checkbox" id="chk2" name="acceptedDocs" required>
-                                <label for="chk2" class="doc-name" title="Ax2 Listado EPP mínimo.pdf">
-                                    Ax2 Listado EPP mínimo.pdf
-                                </label>
-                            </div>
-                            <button type="button" class="doc-view-btn" onclick="loadPdf('Ax2 Listado EPP mínimo.pdf', 'Ax2 Listado EPP mínimo', 'item-doc2', this)">
-                                <i class="fa-regular fa-file-pdf"></i> Ver
-                            </button>
-                        </div>
-
-                        <!-- Doc 3 -->
-                        <div class="doc-item" id="item-doc3">
-                            <div class="doc-item-left">
-                                <input type="checkbox" id="chk3" name="acceptedDocs" required>
+                        <!-- Doc 3 (Uso del área de pruebas) -->
+                        <div class="doc-item active-preview" id="item-doc3">
+                            <div class="doc-item-left" onclick="handleDocItemClick('chk3', event)">
+                                <input type="checkbox" id="chk3" name="acceptedDocs" required disabled>
                                 <label for="chk3" class="doc-name" title="Uso del área de pruebas ELSE v2.pdf">
                                     Uso del área de pruebas ELSE v2.pdf
                                 </label>
+                                <span class="doc-status-badge pending" id="badge-chk3">Pendiente</span>
                             </div>
-                            <button type="button" class="doc-view-btn" onclick="loadPdf('Uso del área de pruebas ELSE v2.pdf', 'Uso del área de pruebas ELSE v2', 'item-doc3', this)">
+                            <button type="button" class="doc-view-btn active" onclick="loadPdf('Uso del área de pruebas ELSE v2.pdf', 'Uso del área de pruebas ELSE v2', 'item-doc3', 'chk3', this)">
+                                <i class="fa-regular fa-file-pdf"></i> Ver
+                            </button>
+                        </div>
+
+                        <!-- Doc 1 (Ax1) -->
+                        <div class="doc-item" id="item-doc1">
+                            <div class="doc-item-left" onclick="handleDocItemClick('chk1', event)">
+                                <input type="checkbox" id="chk1" name="acceptedDocs" required disabled>
+                                <label for="chk1" class="doc-name" title="Ax1 Listado Personal Autorizado.pdf">
+                                    Ax1 Listado Personal Autorizado.pdf
+                                </label>
+                                <span class="doc-status-badge pending" id="badge-chk1">Pendiente</span>
+                            </div>
+                            <button type="button" class="doc-view-btn" onclick="loadPdf('Ax1 Listado Personal Autorizado.pdf', 'Ax1 Listado Personal Autorizado', 'item-doc1', 'chk1', this)">
+                                <i class="fa-regular fa-file-pdf"></i> Ver
+                            </button>
+                        </div>
+
+                        <!-- Doc 2 (Ax2) -->
+                        <div class="doc-item" id="item-doc2">
+                            <div class="doc-item-left" onclick="handleDocItemClick('chk2', event)">
+                                <input type="checkbox" id="chk2" name="acceptedDocs" required disabled>
+                                <label for="chk2" class="doc-name" title="Ax2 Listado EPP mínimo.pdf">
+                                    Ax2 Listado EPP mínimo.pdf
+                                </label>
+                                <span class="doc-status-badge pending" id="badge-chk2">Pendiente</span>
+                            </div>
+                            <button type="button" class="doc-view-btn" onclick="loadPdf('Ax2 Listado EPP mínimo.pdf', 'Ax2 Listado EPP mínimo', 'item-doc2', 'chk2', this)">
                                 <i class="fa-regular fa-file-pdf"></i> Ver
                             </button>
                         </div>
@@ -699,7 +781,7 @@
                 <div class="viewer-title-group">
                     <i class="fa-solid fa-file-lines"></i>
                     <span>Lector Oficial de Documentación:</span>
-                    <span class="current-doc-badge" id="currentDocLabel">Ax1 Listado Personal Autorizado.pdf</span>
+                    <span class="current-doc-badge" id="currentDocLabel">Uso del área de pruebas ELSE v2.pdf</span>
                 </div>
                 <div class="viewer-actions">
                     <button class="viewer-btn" onclick="openFullscreen()" title="Abrir en pestaña completa">
@@ -709,7 +791,18 @@
             </div>
             
             <div class="pdf-frame-container">
-                <iframe id="pdfFrame" src="Ax1 Listado Personal Autorizado.pdf#toolbar=1&navpanes=0&pagemode=none&view=FitH"></iframe>
+                <iframe id="pdfFrame" src="Uso%20del%20%C3%A1rea%20de%20pruebas%20ELSE%20v2.pdf#toolbar=1&navpanes=0&pagemode=none&view=FitH"></iframe>
+            </div>
+
+            <!-- Confirmation Bar in Viewer -->
+            <div class="viewer-confirmation-bar">
+                <div class="viewer-instruction" id="viewerInstructionText">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #FFC107;"></i>
+                    <span>Examine el contenido completo de las páginas antes de validar la lectura.</span>
+                </div>
+                <button type="button" id="btnConfirmCurrentDoc" class="viewer-confirm-btn" onclick="confirmCurrentDocViewed()">
+                    <i class="fa-solid fa-check"></i> He revisado este manual completo
+                </button>
             </div>
         </div>
 
@@ -738,19 +831,28 @@
         const GOOGLE_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwt-kQ95Qa5QAxpsuserthi2nYTJFPL6IjIA4TawmNHd9f5msYmDqzJeAsIgReCSdAwig/exec";
 
         let pendingPayload = null;
+        let currentPdfFile = "Uso del área de pruebas ELSE v2.pdf";
+        let currentDocKey = "chk3";
+
+        // Estado de verificación de lectura completa por documento
+        const docViewed = {
+            chk3: false, // Uso del área de pruebas ELSE v2.pdf
+            chk1: false, // Ax1 Listado Personal Autorizado.pdf
+            chk2: false  // Ax2 Listado EPP mínimo.pdf
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             const dateInput = document.getElementById('fecha');
             const today = new Date().toISOString().split('T')[0];
             dateInput.value = today;
+            updateViewerConfirmationBar("chk3");
         });
 
-        let currentPdfFile = "Ax1 Listado Personal Autorizado.pdf";
-
-        function loadPdf(fileName, friendlyName, itemWrapperId, btnElement) {
+        function loadPdf(fileName, friendlyName, itemWrapperId, chkId, btnElement) {
             currentPdfFile = fileName;
+            currentDocKey = chkId;
+
             const iframe = document.getElementById('pdfFrame');
-            // Carga el PDF ocultando paneles laterales de comentarios o miniaturas
             iframe.src = encodeURIComponent(fileName) + '#toolbar=1&navpanes=0&pagemode=none&view=FitH';
             document.getElementById('currentDocLabel').innerText = fileName;
 
@@ -760,6 +862,64 @@
             if (btnElement) btnElement.classList.add('active');
             const wrapper = document.getElementById(itemWrapperId);
             if (wrapper) wrapper.classList.add('active-preview');
+
+            updateViewerConfirmationBar(chkId);
+        }
+
+        function updateViewerConfirmationBar(chkId) {
+            const btnConfirm = document.getElementById('btnConfirmCurrentDoc');
+            const instruction = document.getElementById('viewerInstructionText');
+
+            if (docViewed[chkId]) {
+                btnConfirm.className = 'viewer-confirm-btn confirmed';
+                btnConfirm.innerHTML = '<i class="fa-solid fa-circle-check"></i> Manual Revisado y Aceptado';
+            } else {
+                btnConfirm.className = 'viewer-confirm-btn';
+                btnConfirm.innerHTML = '<i class="fa-solid fa-check"></i> He revisado este manual completo';
+            }
+
+            checkAllDocsCompleted();
+        }
+
+        function confirmCurrentDocViewed() {
+            if (!currentDocKey) return;
+
+            docViewed[currentDocKey] = true;
+
+            // Habilitar y marcar el checkbox correspondiente
+            const chk = document.getElementById(currentDocKey);
+            if (chk) {
+                chk.disabled = false;
+                chk.checked = true;
+            }
+
+            // Actualizar badge en la lista
+            const badge = document.getElementById('badge-' + currentDocKey);
+            if (badge) {
+                badge.className = 'doc-status-badge completed';
+                badge.innerHTML = '<i class="fa-solid fa-check"></i> Leído';
+            }
+
+            updateViewerConfirmationBar(currentDocKey);
+        }
+
+        function handleDocItemClick(chkId, event) {
+            if (!docViewed[chkId]) {
+                if (event) {
+                    event.preventDefault();
+                }
+                alert("Para marcar la casilla, primero debe revisar el manual completo en el lector lateral y presionar el botón 'He revisado este manual completo'.");
+            }
+        }
+
+        function checkAllDocsCompleted() {
+            const allDone = docViewed.chk3 && docViewed.chk1 && docViewed.chk2;
+            const instruction = document.getElementById('viewerInstructionText');
+            if (allDone) {
+                instruction.innerHTML = '<i class="fa-solid fa-circle-check" style="color: #28a745;"></i> <span style="color: #ABF5D1;">¡Todos los manuales obligatorios han sido revisados y aceptados!</span>';
+            } else {
+                instruction.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #FFC107;"></i> <span>Examine el contenido completo de las páginas antes de validar la lectura.</span>';
+            }
         }
 
         function openFullscreen() {
@@ -771,6 +931,27 @@
                 document.getElementById('accessForm').reset();
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('fecha').value = today;
+
+                // Reiniciar estados de visualización
+                docViewed.chk3 = false;
+                docViewed.chk1 = false;
+                docViewed.chk2 = false;
+
+                ['chk3', 'chk1', 'chk2'].forEach(id => {
+                    const chk = document.getElementById(id);
+                    if (chk) {
+                        chk.checked = false;
+                        chk.disabled = true;
+                    }
+                    const badge = document.getElementById('badge-' + id);
+                    if (badge) {
+                        badge.className = 'doc-status-badge pending';
+                        badge.innerText = 'Pendiente';
+                    }
+                });
+
+                // Volver a cargar el primer documento
+                loadPdf('Uso del área de pruebas ELSE v2.pdf', 'Uso del área de pruebas ELSE v2', 'item-doc3', 'chk3', document.querySelector('#item-doc3 .doc-view-btn'));
             }
         }
 
@@ -801,27 +982,27 @@
             const chk2 = document.getElementById('chk2').checked;
             const chk3 = document.getElementById('chk3').checked;
 
-            if (!chk1 || !chk2 || !chk3) {
-                alert("Debe confirmar que ha leído y está de acuerdo con los 3 documentos normativos obligatorios antes de continuar.");
+            if (!chk3 || !chk1 || !chk2 || !docViewed.chk3 || !docViewed.chk1 || !docViewed.chk2) {
+                alert("Debe confirmar que ha revisado el manual completo de cada una de las 3 normativas obligatorias antes de continuar.");
                 return;
             }
 
             const randomCode = 'ABB-AP-' + Math.floor(100000 + Math.random() * 900000);
 
-            // Guardar payload para enviar al presionar "Aceptar y Finalizar"
+            // Guardar payload con el orden requerido: Uso de área de pruebas, Ax1, Ax2
             pendingPayload = {
                 radicado: randomCode,
                 nombre: nombre,
                 fecha: fecha,
                 motivo: motivo,
                 documentosAceptados: [
+                    "Uso del área de pruebas ELSE v2.pdf",
                     "Ax1 Listado Personal Autorizado.pdf",
-                    "Ax2 Listado EPP mínimo.pdf",
-                    "Uso del área de pruebas ELSE v2.pdf"
+                    "Ax2 Listado EPP mínimo.pdf"
                 ]
             };
 
-            // Mensaje en la ventana modal sin código ni notas
+            // Mensaje en la ventana modal
             document.getElementById('modalMessage').innerHTML = `
                 Estimado(a) <strong>${nombre}</strong>, su solicitud para el día <strong>${fecha}</strong> ha sido radicada formalmente.
             `;
@@ -866,9 +1047,7 @@
 
             // Cerrar modal y limpiar formulario
             document.getElementById('confirmModal').style.display = 'none';
-            document.getElementById('accessForm').reset();
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('fecha').value = today;
+            resetForm();
             pendingPayload = null;
         }
     </script>
